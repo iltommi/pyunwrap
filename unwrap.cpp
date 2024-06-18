@@ -299,7 +299,7 @@ c_unwrap2D(float * wrapped_image, float * quality_image, float * unwrapped_image
   EDGE *edge = (EDGE * ) calloc(no_of_edges, sizeof(EDGE));
 
   initialisePIXELs(wrapped_image, quality_image, pixel, width, height);
-  calculate_reliability(wrapped_image, quality_image, pixel, width, height);
+//   calculate_reliability(wrapped_image, quality_image, pixel, width, height);
   doEDGEs(pixel, edge, width, height);
 
   //sort the EDGEs depending on their reiability. The PIXELs with higher relibility (small value) first
