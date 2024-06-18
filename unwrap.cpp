@@ -292,14 +292,16 @@ void unwrapImage(PIXELM * pixel, float * unwrapped_image, int image_size) {
 
 //the main function of the unwrapper
 void
-c_unwrap2D(float * wrapped_image, float * quality_image, float * unwrapped_image, int height, int width) {
+c_unwrap2D(float * wrapped_image, float * quality_image, float * unwrapped_image, int height, int width, int miguel) {
   int image_size = height * width;
   PIXELM *pixel = (PIXELM * ) calloc(image_size, sizeof(PIXELM));
   int no_of_edges = 2 * image_size - width - height;
   EDGE *edge = (EDGE * ) calloc(no_of_edges, sizeof(EDGE));
 
   initialisePIXELs(wrapped_image, quality_image, pixel, width, height);
-//   calculate_reliability(wrapped_image, quality_image, pixel, width, height);
+  if (miguel==1) {
+    calculate_reliability(wrapped_image, quality_image, pixel, width, height);
+  }
   doEDGEs(pixel, edge, width, height);
 
   //sort the EDGEs depending on their reiability. The PIXELs with higher relibility (small value) first
@@ -314,7 +316,7 @@ c_unwrap2D(float * wrapped_image, float * quality_image, float * unwrapped_image
   free(pixel);
 }
 
-py::array_t<float> unwrap2D(py::array_t<float> input1, py::array_t<float> input2) {
+py::array_t<float> unwrap2D(py::array_t<float> input1, py::array_t<float> input2, bool miguel = false) {
 
     py::array_t<float> input1_c = py::array_t<float,py::array::c_style| py::array::forcecast>(input1);
     py::array_t<float> input2_c = py::array_t<float,py::array::c_style| py::array::forcecast>(input2);
@@ -338,7 +340,8 @@ py::array_t<float> unwrap2D(py::array_t<float> input1, py::array_t<float> input2
 
     std::vector<float> result_vec(input_vec1.size(),0);
 //     std::cout << buf1.shape[1] << "  " << buf1.shape[0] <<std::endl;
-    c_unwrap2D(&input_vec1[0], &input_vec2[0], &result_vec[0], buf1.shape[0], buf1.shape[1]);
+    int miguel_int = miguel? 1 : 0 ; 
+    c_unwrap2D(&input_vec1[0], &input_vec2[0], &result_vec[0], buf1.shape[0], buf1.shape[1], miguel_int);
 
 
     py::array_t<float> result({buf1.shape[0], buf1.shape[1]});
@@ -349,6 +352,13 @@ py::array_t<float> unwrap2D(py::array_t<float> input1, py::array_t<float> input2
     return result;
 }
 
+// PYBIND11_MODULE(pyunwrap, m) {
+//     m.def("unwrap2D", &unwrap2D, "Quality guided algorithm unwrap");
+// }
+// 
 PYBIND11_MODULE(pyunwrap, m) {
-    m.def("unwrap2D", &unwrap2D, "Quality guided algorithm unwrap");
+    m.doc() = "2D quality guided algorithm unwrap"; // Optional module docstring
+
+    m.def("unwrap2D", &unwrap2D, py::arg("fringeshift array"), py::arg("quality array"), py::arg("miguel") = false,
+          "Quality guided algorithm unwrap. Add miguel with flag");
 }
