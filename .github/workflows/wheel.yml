@@ -31,7 +31,6 @@ jobs:
           path: ./wheelhouse/*.whl
 
       - name: Publish on PyPi
-        if: github.event.release
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
