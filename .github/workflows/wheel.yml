@@ -28,8 +28,6 @@ jobs:
     steps:
       - name: Download a distribution artifact
         uses: actions/download-artifact@v2
-        with:
-          path: ./wheelhouse/*.whl
       - name: findstuff
         run: find .
       # - name: Publish distribution to PyPI
