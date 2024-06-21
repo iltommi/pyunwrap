@@ -32,9 +32,8 @@ jobs:
     needs: build_wheels
     steps:
       - name: Download a distribution artifact
-      - uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v2
         with:
-          pattern: python-wheels*
           path: dist
           merge-multiple: true
       - name: findstuff
@@ -43,4 +42,4 @@ jobs:
         with:
           skip-existing: true
           password: ${{ secrets.PYPI_API_TOKEN }}
-          packages-dir: ./dist
+          packages-dir: ./wheelhouse
