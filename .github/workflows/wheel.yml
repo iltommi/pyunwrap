@@ -1,5 +1,7 @@
 name: Build
+
 on: [push, pull_request]
+
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -19,7 +21,7 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload --skip-existing wheelhouse/*          
+        run: python -m twine upload --skip-existing wheelhouse/*          
       - uses: actions/upload-artifact@v4
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
